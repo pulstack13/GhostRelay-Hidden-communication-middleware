@@ -1,0 +1,4 @@
+supabase.url=https://YOUR_PROJECT_ID.supabase.co
+supabase.publishableKey=sb_publishable_REPLACE_WITH_YOUR_PROJECT_KEY
+
+app.lockCode=REPLACE_WITH_4_TO_12_DIGITS

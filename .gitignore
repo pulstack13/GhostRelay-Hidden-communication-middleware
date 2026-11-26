@@ -1,0 +1,10 @@
+.gradle/
+**/build/
+local.properties
+/store.properties
+/Store.apk
+.tools/
+.idea/
+gradle-build.log
+server/*.log
+server/*.err.log
