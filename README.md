@@ -2,10 +2,6 @@
 
 Store is a dark-mode Android one-to-one messaging prototype. It connects to a Supabase project configured by the person building the APK. Users create separate accounts, add friends by username, then exchange messages and attachments. Optional live-location sharing is available after the matching Supabase migration is installed.
 
-> **Prototype notice:** Store is not an end-to-end encrypted messenger. Messages are protected by Supabase authentication and row-level security (RLS), but the Supabase project owner and backend can access stored message data. Do not use it for sensitive conversations.
-
-## What it does
-
 ### Available in the Android app
 
 - Email and password account registration and sign-in through Supabase Auth.
@@ -36,9 +32,6 @@ An email alert Edge Function is included, but it does not work until the email m
 | Image/audio/file attachments | Available after migration 001 | Up to 12 MB; audio is selected from files, not recorded live |
 | Live location | Requires migration 003 | Explicitly started; visible notification; user can stop it |
 | Email alerts | Optional server setup required | Migration 002, Resend, Edge Function, webhook |
-| Native push notifications | Not implemented | No Firebase/OneSignal push service |
-| End-to-end encryption | Not implemented | Supabase RLS is access control, not E2EE |
-| Voice/video calls | Not implemented | Call controls are previews only |
 | Device pairing | Not implemented | Pairing screen is a placeholder |
 | Custom activation code | Available at build time | Configure `app.lockCode`; same code is in the APK for all recipients |
 
@@ -71,7 +64,7 @@ Each APK is built for one Supabase project and one activation code. Configure th
    app.lockCode=YOUR_4_TO_12_DIGIT_CODE
    ```
 
-   Choose 4–12 numeric digits. Everyone installing the APK uses the same activation code. The code is compiled into the APK, so it is a convenience gate, not a secure account password. Do not reuse an important password.
+   Choose 4–12 numeric digits. Everyone installing the APK uses the same activation code. The code is compiled into the APK, so it is a convenience gate, not a secure account password.
 
    Use only a Supabase publishable key (or legacy anon key). **Never put a `service_role` or `sb_secret_` key in this file or in the Android app.** Gradle rejects secret key formats and validates that an app lock code was selected.
 
@@ -86,24 +79,6 @@ Each APK is built for one Supabase project and one activation code. Configure th
 
 The Android app uses the publishable key directly. Database RLS policies are essential because a publishable key is public and can be extracted from an APK. `store.properties.example` contains placeholders only. The real `store.properties` and `local.properties` are ignored by Git. Do not commit them.
 
-## GitHub: publish the source and distribute the APK
-
-GitHub stores the project source and setup instructions; it does not host the Android backend. Supabase provides the online accounts, database, and file storage. This repository currently has no GitHub Actions build workflow, so contributors build the APK locally with Android Studio or Gradle.
-
-1. Create a GitHub repository and push the project source. Include `store.properties.example`, migrations, and this README.
-2. Before pushing, confirm that `store.properties`, `local.properties`, signing keys, and APK files are not staged. The repository `.gitignore` excludes local properties and the root `Store.apk`; Gradle output under `build/` is also ignored.
-3. A friend or contributor clones the repository, creates their own `store.properties` from the example, configures their Supabase project and lock code, runs the required migration, and builds the APK.
-4. To share a particular APK with users, upload the built APK to a GitHub Release or send it directly. Do not commit the APK into the source tree. Every recipient of a given APK connects to the Supabase project and uses the activation code that were configured when that APK was built.
-
-Example clone/build flow (replace the URL and folder name with your GitHub repository):
-
-```powershell
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
-cd YOUR-REPOSITORY
-Copy-Item store.properties.example store.properties
-# Edit store.properties, then run the Supabase migration in the dashboard.
-.\gradlew.bat :app:assembleDebug
-```
 
 ## Build the APK
 
@@ -134,9 +109,8 @@ Or open the project in Android Studio, let Gradle sync, then choose **Build → 
 3. Each person installs it, enters the configured activation code, creates their own Store account, and confirms their email if Supabase email confirmation is enabled.
 4. Users search for each other by username, send friend requests, accept the requests, and then open a one-to-one chat.
 
-All users of a shared APK connect to the same configured Supabase project and use the same activation code, but each creates their own account. The activation gate is not strong security; it is compiled into the APK. For repeatable APK updates, use a consistent signing key. The default debug APK is suitable for testing, not a production release.
+All users of a shared APK connect to the same configured Supabase project and use the same activation code, but each creates their own account.it is compiled into the APK. For repeatable APK updates, use a consistent signing key. The default debug APK is suitable for testing, not a production release.
 
-For GitHub, commit source files and `store.properties.example`; do not commit `store.properties`, `local.properties`, signing keys, server secrets, or APK binaries. The root `.gitignore` excludes local configuration and the old root `Store.apk`. Use GitHub Releases for distributing a built APK.
 
 ## Configure email alerts (optional)
 
@@ -185,15 +159,13 @@ This prototype keeps up to 500 messages in memory and writes attachments under `
 
 ## Security and privacy notes
 
-- Supabase Auth and RLS protect access according to the configured policies, but messages are not end-to-end encrypted.
+- Supabase Auth and RLS protect access according to the configured policies.
 - The Supabase publishable/anon key and local activation code are embedded in the APK. Treat neither as a secret; never embed a service-role/secret key.
 - The activation code is shared by everyone using the same APK and can be extracted from it. Use Supabase Auth for actual account access.
 - Location is only requested after the user taps the sharing control. Android shows an ongoing notification while the foreground location service runs. The user can stop sharing at any time.
 - Email delivery requires server-side secrets. Keep all Resend, Supabase service-role, and webhook secrets in Supabase Edge Function secrets only.
 
 ## Known limitations
-- Messages are not end-to-end encrypted; there are no group or invite-only rooms.
-- Voice/video calling, live audio recording, native push notifications, device pairing, and device revocation are not implemented.
 - Email alerts are optional and inactive until fully configured.
 - Android background location frequency depends on device power management, permission state, and location availability.
 
