@@ -1,6 +1,6 @@
-# Store
+# GhostRelay
 
-Store is a dark-mode Android one-to-one messaging prototype. It connects to a Supabase project configured by the person building the APK. Users create separate accounts, add friends by username, then exchange messages and attachments. Optional live-location sharing is available after the matching Supabase migration is installed.
+GhostRelay is a dark-mode Android one-to-one messaging prototype. It connects to a Supabase project configured by the person building the APK. Users create separate accounts, add friends by username, then exchange messages and attachments. Optional live-location sharing is available after the matching Supabase migration is installed.
 
 ### Available in the Android app
 
